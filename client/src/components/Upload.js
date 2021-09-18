@@ -7,7 +7,7 @@ const Upload = props => {
         <div style={{margin: "15px 0px"}}>
             <BsCloudUpload style={{position: "absolute", marginLeft: "10px", fontSize: "20px"}}/>
             <input type="file" id="button" hidden onChange={props.onChange} accept={props.accept}/>
-            <label for="button" style={{
+            <label htmlFor="button" style={{
                 padding: "10px",
                 paddingLeft: "35px",
                 border: "3px solid " + COLORS.primary,
