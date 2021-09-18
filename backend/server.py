@@ -1,5 +1,5 @@
 import math
-import numpy
+import numpy as np
 
 class Matrix:
 	def __init__(self, rows, cols):
@@ -7,283 +7,167 @@ class Matrix:
 		self.cols = cols
 		self.data = []
 
-		for (i in range(0, len(self.rows))):
+		for i in range(0, len(self.rows)):
 			self.data[i] = []
-			for (j in range(0, len(self.cols))):
+			for j in range(0, len(self.cols)):
 				self.data[i][j] = 0
-
-    @staticmethod
-	multiply(a, b):
-		if (a.cols !== b.rows) {
-			console.log("Cols of A don't match Rows of B")
+				
+	@staticmethod
+	def multiply(a, b):
+		if a.cols != b.rows:
+			print("Cols of A don't match Rows of B")
 			return
-		}
 
-		var result = new Matrix(a.rows, b.cols)
-		result.map((e, i, j) => {
-	        // Dot product of values in col
-	        let sum = 0
-	        for (let k = 0 k < a.cols k++) {
+		result = Matrix(a.rows, b.cols)
+
+		"""map():
+
+		result.map((e, i, j) =>:
+	        # Dot product of values in col
+	        sum = 0
+	        for k in range(len(a.cols)):
 	          sum += a.data[i][k] * b.data[k][j]
-	        }
 	        return sum
-      	})
+      	)"""
 
 		return result
 
-	multiply(n) {
-		// Check if argument is a matrix or a number and multiply accordingly
-		if (n instanceof Matrix) {
-			for (var i = 0 i < self.rows i++) {
-				for (var j = 0 j < self.cols j++) {
+	def multiply(self, n):
+		# Check if argument is a matrix or a number and multiply accordingly
+		if (isinstance(n, Matrix)):
+			for i in range(len(self.rows)):
+				for j in range(len(self.cols)):
 					self.data[i][j] *= n.data[i][j]
-				}
-			}
-		} else {
-			for (var i = 0 i < self.rows i++) {
-				for (var j = 0 j < self.cols j++) {
+		else:
+			for i in range(len(self.rows)):
+				for j in range(len(self.cols)):
 					self.data[i][j] *= n
-				}
-			}
-		}
-	}
 
-	add(n) {
-		// Check if argument is a matrix or a number and add accordingly
-		if (n instanceof Matrix) {
-			for (var i = 0 i < self.rows i++) {
-				for (var j = 0 j < self.cols j++) {
+	def add(self, n):
+		# Check if argument is a matrix or a number and add accordingly
+		if (isinstance(n, Matrix)):
+			for i in range(len(self.rows)):
+				for j in range(len(self.cols)):
 					self.data[i][j] += n.data[i][j]
-				}
-			}
-		} else {
-			for (var i = 0 i < self.rows i++) {
-				for (var j = 0 j < self.cols j++) {
+		else:
+			for i in range(len(self.rows)):
+				for j in range(len(self.cols)):
 					self.data[i][j] += n
-				}
-			}
-		}
-	}
 
-	static subtract(a, b) {
-		if (a.rows !== b.rows || a.cols !== b.cols) {
-	      console.log('Columns and Rows of A must match Columns and Rows of B.')
-	      return
-	    }
+	@staticmethod
+	def subtract(a, b):
+		if a.rows != b.rows or a.cols != b.cols:
+			print('Columns and Rows of A must match Columns and Rows of B.')
+	    	return
+			
+		result = Matrix(a.rows, a.cols)
+		"""result.map((_, i, j) => a.data[i][j] - b.data[i][j])"""
+		return result
 
-	    var result = new Matrix(a.rows, a.cols)
-	    result.map((_, i, j) => a.data[i][j] - b.data[i][j])
-	    return result
-	}
-
-	subtract(n) {
-		// Check if argument is a matrix or a number and add accordingly
-		if (n instanceof Matrix) {
-			for (var i = 0 i < self.rows i++) {
-				for (var j = 0 j < self.cols j++) {
+	def subtract(self, n):
+		# Check if argument is a matrix or a number and add accordingly
+		if (isinstance(n, Matrix)):
+			for i in range(len(self.rows)):
+				for j in range(len(self.cols)):
 					self.data[i][j] -= n.data[i][j]
-				}
-			}
-		} else {
-			for (var i = 0 i < self.rows i++) {
-				for (var j = 0 j < self.cols j++) {
+		else:
+			for i in range(len(self.rows)):
+				for j in range(len(self.cols)):
 					self.data[i][j] -= n
-				}
-			}
-		}
-	}
 
-	// Turn an array into a matrix
-	static fromArray(arr) {
-		var m = new Matrix(arr.length, 1)
-		for (var i = 0 i < arr.length i++) {
+	# Turn an array into a matrix
+	@staticmethod
+	def fromArray(arr):
+		m = Matrix(arr.length, 1)
+		for i in range(len(arr)):
 			m.data[i][0] = arr[i]
-		}
 		return m
-	}
 
-	static from2DArray(arr) {
-		var m = new Matrix(arr.length, arr[0].length)
-		for (var i = 0 i < arr.length i++) {
-			for (var j = 0 j < arr[i].length j++) {
+	@staticmethod
+	def from2DArray(arr):
+		m = Matrix(arr.length, arr[0].length)
+		for i in range(len(arr)):
+			for j in range(len(arr[i])):
 				m.data[i][j] = arr[i][j]
-			}
-		}
 		return m
-	}
 
-	toArray() {
-		var arr = []
+	def toArray(self):
+		arr = []
 
-		for (var i = 0 i < self.rows i++) {
-			for (var j = 0 j < self.cols j++) {
+		for i in range(len(self.rows)):
+			for j in range(len(self.cols)):
 				arr.push(self.data[i][j])
-			}
-		}
 
 		return arr
-	}
 
-	randomize() {
-		for (var i = 0 i < self.rows i++) {
-			for (var j = 0 j < self.cols j++) {
-				self.data[i][j] = Math.random() * 2 - 1
-			}
-		}
-	}
+	def randomize(self):
 
-	product(n) {
-		if (n instanceof Matrix) {
-			// Outputs a matrix
-			if (self.cols !== n.rows) {
-				// Number of columns in first matrix needs to be the same as the number of rows in the second matrix
-				return undefined
-			}
-			let result = new Matrix(self.rows, n.cols)
-			let a = self
-			let b = n
+		for i in range(len(self.rows)):
+			for j in range(len(self.cols)):
+				self.data[i][j] = math.random() * 2 - 1
 
-			for (var i = 0 i < result.rows i++) {
-				for (var j = 0 j < result.cols j++) {
-					let sum = 0
-					for (var k = 0  k < a.cols k++) {
+	def product(self, n):
+		if isinstance(n, Matrix):
+			# Outputs a matrix
+			if self.cols != n.rows:
+				# Number of columns in first matrix needs to be the same as the number of rows in the second matrix
+				return None
+			result = Matrix(self.rows, n.cols)
+			a = self
+			b = n
+
+			for i in range(len(result.rows)):
+				for j in range(len(result.cols)):
+					sum = 0
+					for k in range(len(a.cols)):
 						sum += a.data[i][k] * b.data[k][j]	
-					}
 					result.data[i][j] = sum	
-				}
-			}
 
 			return result
-		} else {
-			// Outputs a scalar
-		}
-	}
 
-	static transpose(matrix) {
-		var result = new Matrix(matrix.cols, matrix.rows)
+	@staticmethod
+	def transpose(matrix):
+		result = Matrix(matrix.cols, matrix.rows)
 
-		for (var i = 0 i < matrix.rows i++) {
-			for (var j = 0 j < matrix.cols j++) {
+		for i in range(len(matrix.rows)):
+			for j in range(len(matrix.cols)):
 				result.data[j][i] = matrix.data[i][j]
-			}
-		}
 
 		return result
-	}
 
-	map(func) {
-		// Apply function to every element of matrix
-		for (var i = 0 i < self.rows i++) {
-			for (var j = 0 j < self.cols j++) {
+
+	def map(self, func):
+		# Apply function to every element of matrix
+		for i in range(len(self.rows)):
+			for j in range(len(self.cols)):
 				self.data[i][j] = func(self.data[i][j], i, j)
-			}
-		}
-	}
 
-	static map(matrix, func) {
-		var result = new Matrix(matrix.rows, matrix.cols)
+	@staticmethod
+	def map(matrix, func):
+		result = Matrix(matrix.rows, matrix.cols)
 
-		// Apply function to every element of matrix
-		for (var i = 0 i < matrix.rows i++) {
-			for (var j = 0 j < matrix.cols j++) {
-				var val = matrix.data[i][j]
+		# Apply function to every element of matrix
+		for i in range(len(matrix.rows)):
+			for j in range(len(matrix.cols)):
+				val = matrix.data[i][j]
 				result.data[i][j] = func(val)
-			}
-		}
 
 		return result
-	}
 
-	print() {
-		console.table(self.data)
-	}
-
-	serialize() {
+	"""serialize():
 	    return JSON.stringify(self)
-	}
+	
 
-	static deserialize(data) {
-	    if (typeof data == 'string') {
+	static deserialize(data):
+	    if (typeof data == 'string'):
 	      	data = JSON.parse(data)
-	    }
+	    
 	    let matrix = new Matrix(data.rows, data.cols)
 	    matrix.data = data.data
 	    return matrix
-	}
+	"""
 
-var Vector = function (x, y) {
-	self.x = x || 0
-	self.y = y || 0
-}
-
-Vector.prototype.getMag = function () {
-	return Math.sqrt(self.x*self.x + self.y*self.y)
-}
-
-Vector.prototype.setMag = function (magnitude) {
-	var direction = self.getDir()
-	self.x = Math.cos(direction) * magnitude
-	self.y = Math.sin(direction) * magnitude
-}
-
-Vector.prototype.getDir = function () {
-  return Math.atan2(self.y, self.x)
-}
-
-Vector.prototype.add = function (a, b) {
-	if (b) {
-    return new Vector(a.x + b.x, a.y + b.y)
-  } else {
-    self.x = self.x + a.x
-	  self.y = self.y -+ a.y
-  }
-}
-
-Vector.prototype.sub = function (a, b) {
-  if (b) {
-    return new Vector(a.x - b.x, a.y - b.y)
-  } else {
-    self.x = self.x - a.x
-	  self.y = self.y - a.y
-  }
-}
-
-Vector.prototype.mult = function (scalar) {
-	self.x = self.x * scalar
-	self.y = self.y * scalar
-}
-
-Vector.prototype.div = function (scalar) {
-	self.x = self.x / scalar
-	self.y = self.y / scalar
-}
-
-Vector.prototype.getDot = function (b) {
-	return self.x * b.x + self.y * b.y
-}
-
-Vector.prototype.dist = function (a, b) {
-  return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
-}
-
-Vector.prototype.normalize = function () {
-	if (self.getMag() != 0) {
-		self.div(self.getMag())
-	}
-}
-
-Vector.prototype.limit = function (max) {
-	if (self.getMag() > max) {
-		self.normalize()
-		self.mult(max)
-	}
-}
-
-Vector.prototype.copy = function () {
-	return new Vector(self.x, self.y)
-}
-
-def sigmoid(x):
+def sig(x):
     sig = 1 / (1 + math.exp(-x))
     return sig
 
@@ -291,42 +175,143 @@ def dSig(x):
     return x * (1 - x)
 
 class NeuralNetwork:
-    def __init__(self, numInput, numHidden, numOutput):
-        if (isinstance(numInput, NeuralNetwork)):
-            a = numInput
-            self.numInput = a.numInput
-            self.numHidden = a.numHidden
-            self.numOutput = a.numOutput
+	def __init__(self, numInput, numHidden, numOutput):
+		if (isinstance(numInput, NeuralNetwork)):
+			a = numInput
+			self.numInput = a.numInput
+			self.numHidden = a.numHidden
+			self.numOutput = a.numOutput
 
-            self.inputWeights = a.inputWeights.copy()
-            self.hiddenWeights = a.hiddenWeights.copy()
+			self.inputWeights = a.inputWeights.copy()
+			self.hiddenWeights = a.hiddenWeights.copy()
 
-            self.hiddenBias = a.hiddenBias.copy()
-            self.outputBias = a.outputBias.copy()
+			self.hiddenBias = a.hiddenBias.copy()
+			self.outputBias = a.outputBias.copy()
 
-        else:
+		else:
 
-            self.numInput = numInput
-            self.numHidden = numHidden
-            self.numOutput = numOutput
+			self.numInput = numInput
+			self.numHidden = numHidden
+			self.numOutput = numOutput
 
-            # Initialize and randomize the weights for the input and hidden layer
-            self.inputWeights = new Matrix(self.numHidden, self.numInput)
-            self.hiddenWeights = new Matrix(self.numOutput, self.numHidden)
-            # Randomize the weights from -1 to 1
-            self.inputWeights.randomize()
-            self.hiddenWeights.randomize()
+			# Initialize and randomize the weights for the input and hidden layer
+			self.inputWeights = Matrix(self.numHidden, self.numInput)
+			self.hiddenWeights = Matrix(self.numOutput, self.numHidden)
+			# Randomize the weights from -1 to 1
+			self.inputWeights.randomize()
+			self.hiddenWeights.randomize()
 
-            # Initialize and randomize the bias
-            self.hiddenBias = new Matrix(self.numHidden, 1)
-            self.outputBias = new Matrix(self.numOutput, 1)
-            self.hiddenBias.randomize()
-            self.outputBias.randomize()
-        
+			# Initialize and randomize the bias
+			self.hiddenBias = Matrix(self.numHidden, 1)
+			self.outputBias = Matrix(self.numOutput, 1)
+			self.hiddenBias.randomize()
+			self.outputBias.randomize()
+			
+	def feedForward(self, input):
+		# Get the inputs in Matrix form
+		inputs = Matrix.fromArray(input)
+
+		# Multiply the weights with the inputs
+		hidden = Matrix.multiply(self.inputWeights, inputs)
+		# Add the bias
+		hidden.add(self.hiddenBias)
+		# Do the activation function
+		hidden.map(sig)
+
+		outputs = Matrix.multiply(self.hiddenWeights, hidden)
+		outputs.add(self.outputBias)
+		outputs.map(sig)
+
+		return outputs.toArray()
+
+	def train(self, input_array, target_array):
+
+		# Get the inputs in Matrix form
+		inputs = Matrix.fromArray(input_array)
+
+		# Multiply the weights with the inputs
+		hidden = Matrix.multiply(self.inputWeights, inputs)
+		# Add the bias
+		hidden.add(self.hiddenBias)
+		# Do the activation function
+		hidden.map(sig)
+
+		outputs = Matrix.multiply(self.hiddenWeights, hidden)
+		outputs.add(self.outputBias)
+		outputs.map(sig)
 
 
-    def feedForward(input):
-        return 0
-        
+		# Convert target array to matrix
+		targets = Matrix.fromArray(target_array)
+
+		output_errors = Matrix.subtract(targets, outputs)
+
+		# Get the gradient
+		gradients = Matrix.map(outputs, dSig)
+		gradients.multiply(output_errors)
+		gradients.multiply(self.lr)
+		
+		# Transpose the hidden and input weights
+		hiddenT = Matrix.transpose(hidden)
+
+		# Get the deltas
+		hiddenWeightsD = Matrix.multiply(gradients, hiddenT)
+
+		# Change the hidden weights now
+		self.hiddenWeights.add(hiddenWeightsD)
+		# Adjust hidden bias
+		self.outputBias.add(gradients)
+
+		# Calculate the hidden errors
+		hiddenWeightsT = Matrix.transpose(self.hiddenWeights)
+		hiddenErrors = Matrix.multiply(hiddenWeightsT, output_errors)
+
+		hiddenGrad = Matrix.map(hidden, dSig)
+
+		hiddenGrad.multiply(hiddenErrors)
+		hiddenGrad.multiply(self.lr)
 
 
+		# Now, we calculate the deltas from input to hidden
+		inputsT = Matrix.transpose(inputs)
+		inputWeightsD = Matrix.multiply(hiddenGrad, inputsT)
+
+		self.inputWeights.add(inputWeightsD)
+
+		self.hiddenBias.add(hiddenGrad)
+
+	def serialize(self):
+		return JSON.stringify(self)
+
+
+	@staticmethod
+	def deserialize(data):
+		if isinstance(data, str):
+			data = JSON.parse(data)
+		
+		nn = NeuralNetwork(data.input_nodes, data.hidden_nodes, data.output_nodes)
+		nn.inputWeights = Matrix.deserialize(data.inputWeights)
+		nn.hiddenWeights = Matrix.deserialize(data.hiddenWeights)
+		nn.hiddenBias = Matrix.deserialize(data.hiddenBias)
+		nn.outputBias = Matrix.deserialize(data.outputBias)
+		nn.lr = data.lr
+		return nn
+
+
+	# Adding function for neuro-evolution
+	def copy(self):
+		return NeuralNetwork(self)
+
+	# Accept an arbitrary function for mutation
+	def mutate(self, rate):
+		def mutate(val):
+			if math.random() < rate:
+				return 2 * math.random() - 1
+			else:
+				return val
+			
+		
+		self.inputWeights.map(mutate)
+		self.hiddenWeights.map(mutate)
+		self.hiddenBias.map(mutate)
+		self.outputBias.map(mutate)
