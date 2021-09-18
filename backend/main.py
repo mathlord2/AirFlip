@@ -130,12 +130,6 @@ class Matrix:
 
     return result
 
-  def print(self):
-    matrixPrints = 0
-    while matrixPrints != len(self.data):
-      print(self.data[matrixPrints])
-      matrixPrints += 1
-
   def serialize(self):
     return json.dumps(self.__dict__)
 

@@ -21,4 +21,5 @@ const useWebcam = (videoRef, onLoaded) => {
   }, [onLoaded, videoRef]);
 }
 
+
 export default useWebcam;
