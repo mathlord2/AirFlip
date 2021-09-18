@@ -20,7 +20,7 @@ class Matrix:
     for i in range(0, self.rows):
       for j in range(0, self.cols):
         m.data[i][j] = self.data[i][j]
-    return m;
+    return m
 
   @staticmethod
   def mult(a, b):
@@ -148,7 +148,7 @@ class Matrix:
     return matrix
 
 def sig(x, a, b):
-  return 1 / (1 + math.exp(-x));
+  return 1 / (1 + math.exp(-x))
 
 def dSig(x):
   return x * (1-x)
@@ -274,16 +274,32 @@ class NeuralNetwork:
     self.hiddenBias.map(mutate)
     self.outputBias.map(mutate)
 
+  def serialize(self):
+    return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True)
+
+  @staticmethod
+  def deserialize(data):
+        bruh = dict(json.loads(data))
+        print(bruh)
+        nn = NeuralNetwork(bruh.numInput, bruh.numHidden, bruh.numOutput)
+        nn.inputWeights = Matrix.deserialize(bruh.inputWeights)
+        nn.hiddenWeights = Matrix.deserialize(bruh.hiddenWeights)
+        nn.hiddenBias = Matrix.deserialize(bruh.hiddenBias)
+        nn.outputBias = Matrix.deserialize(bruh.outputBias)
+        nn.lr = bruh.lr
+        return nn
+
 # Initialize neural network
 
-nn = NeuralNetwork(2, 8, 1)
+nn = NeuralNetwork(2, 4, 1)
 
 # Training data for xor
 
 trainingData = [
 	{
 		"inputs": [1, 0],
-		"targets": [1]
+		"targets": [0]
 	},
 	{
 		"inputs": [0, 1],
@@ -291,23 +307,36 @@ trainingData = [
 	},
 	{
 		"inputs": [0, 0],
-		"targets": [0]
+		"targets": [1]
 	},
 	{
 		"inputs": [1, 1],
-		"targets": [0]
+		"targets": [1]
 	}
 ]
 
 # Training Process
 
-reps = 1000
+reps = 5
 for i in range(0, reps):
   for x in range(0, len(trainingData)):
-    nn.train(trainingData[x].get("inputs"), trainingData[x].get("targets"))
-    print(str(i / (reps / 100)) + " % complete")
+      index = random.randint(0, len(trainingData)-1)
+      nn.train(trainingData[index].get("inputs"), trainingData[index].get("targets"))
+      print(str(i / (reps / 100)) + " % complete")
 
 # Testing
+
+print(nn.feedForward([1, 0]))
+print(nn.feedForward([0, 0]))
+print(nn.feedForward([0, 1]))
+print(nn.feedForward([1, 1]))
+
+with open('data.json', 'w') as f:
+    f = 'bruhhhh'
+    #f = nn.serialize()
+    #print(f)
+
+print("Serialized and deserialized the neural network.")
 
 print(nn.feedForward([1, 0]))
 print(nn.feedForward([0, 0]))
