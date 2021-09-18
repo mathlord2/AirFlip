@@ -1,14 +1,36 @@
 * {
   transition: 0.3s;
   scroll-behavior: smooth;
+  font-family: 'Inter', sans-serif;
+}
+
+html, body {
+  background: rgb(222,233,244);
+  background: radial-gradient(circle, rgb(196, 220, 245) 0%, rgba(255,255,255,1) 100%);
 }
 
 h1 {
+  font-size: 50px;
   font-weight: 700;
+  letter-spacing: 2px;
 }
 
-button, a {
+h2 {
+  font-size: 36px;
+  letter-spacing: 1.6px;
+}
+
+p {
+  font-size: 18px;
+  letter-spacing: 1.3px;
+}
+
+button, a, label {
   cursor: pointer;
+}
+
+button:hover, a:hover, label:hover {
+  opacity: 0.7;
 }
 
 code {

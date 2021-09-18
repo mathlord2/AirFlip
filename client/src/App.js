@@ -10,13 +10,14 @@ import {
 } from "react-router-dom";
 
 import Home from "./pages/Home/Home";
+import Image from "./HTNLogo.png";
 
 function App() {
   return (
     <Router>
       <ul className="navbar">
-        <li>
-          <NavLink exact to="/" className="link" activeClassName="activeLink">Home</NavLink>
+        <li id="logo">
+          <NavLink exact to="/" className="link" activeClassName="activeLink"><img src={Image} alt="Logo"/> Home</NavLink>
         </li>
       </ul>
         
