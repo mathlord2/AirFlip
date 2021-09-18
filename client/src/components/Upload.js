@@ -15,8 +15,9 @@ const Upload = props => {
                 textAlign: "left",
                 width: props.width,
                 height: props.height,
-                marginRight: "10px",
-                boxShadow: SHADOW.primary
+                marginRight: "20px",
+                boxShadow: SHADOW.primary,
+                cursor: "pointer"
             }}>{props.text}</label>
             <span id="file-chosen">{!props.file ? "No file chosen" : props.file.name}</span>
         </div>

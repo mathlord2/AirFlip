@@ -4,7 +4,7 @@ const COLORS = {
 }
 
 const SHADOW = {
-    primary: "2px 2px 10px black"
+    primary: "5px 5px 40px #444444"
 }
 
 export {COLORS, SHADOW};

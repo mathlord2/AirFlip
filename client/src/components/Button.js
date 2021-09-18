@@ -11,8 +11,7 @@ const Button = props => {
             fontSize: props.size,
             padding: props.padding ? props.padding : "10px 20px",
             border: "none",
-            margin: props.margin ? props.margin : 0,
-            opacity: props.disabled ? 0.5 : 1
+            margin: props.margin ? props.margin : 0
         }} disabled={props.disabled}>
             {props.text}
         </button>
