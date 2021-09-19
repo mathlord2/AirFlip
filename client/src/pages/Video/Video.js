@@ -130,9 +130,7 @@ const Video = React.memo(
                             }, 5000)
                         }, 5000)
                     }, 5000)
-          
-                  }, 5000)
-          
+                }, 5000)
               }, 5000)
           
             }, 5000)
@@ -216,7 +214,18 @@ const Video = React.memo(
                         halfRep = !halfRep;
             
                         if (!halfRep)
-                        counter++;
+                        {
+                            if (poseIndex == 1)
+                            {
+                                // right
+                                //Home.setPageNumber(pageNumber+1);
+                            } else if (poseIndex == 2)
+                            {
+                                // left
+                                //Home.setPageNumber(pageNumber-1);
+                            }
+                            //setPageNumber();
+                        }
             
                         lastRep = Date.now();
                     }

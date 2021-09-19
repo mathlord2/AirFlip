@@ -35,11 +35,16 @@ const Home = props => {
     const numRef = useRef({});
     numRef.current = numPages;
     const wordRef = useRef({});
-    wordRef.current = words
+    wordRef.current = words;
 
     useEffect(() => {
         handleListen();
+
     }, [videoOn]);
+
+    const handleVideo = () => {
+        
+    }
 
     const handleListen = () => {
         if (videoOn) {
