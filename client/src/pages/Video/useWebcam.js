@@ -16,7 +16,7 @@ const useWebcam = (videoRef, onLoaded) => {
             onLoaded();
           }
           videoRef.current.play();
-        })
+        });
     }
   }, [onLoaded, videoRef]);
 }

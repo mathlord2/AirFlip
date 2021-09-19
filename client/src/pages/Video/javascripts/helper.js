@@ -1,11 +1,4 @@
-// Pass in a video stream to the model to detect poses.
-const video = document.getElementById('video');
-
-
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
-
-function drawCircle(x, y, r, c, options, arc, start) {
+export function drawCircle(ctx, x, y, r, c, options, arc, start) {
 
   if (!options)
     options = {};
@@ -30,7 +23,7 @@ function drawCircle(x, y, r, c, options, arc, start) {
     ctx.restore();
 }
 
-function drawLine(x1, y1, x2, y2, color, thickness, cap, alpha) {
+export function drawLine(ctx, x1, y1, x2, y2, color, thickness, cap, alpha) {
 
 	ctx.beginPath();
 	ctx.lineWidth = thickness;
@@ -44,7 +37,7 @@ function drawLine(x1, y1, x2, y2, color, thickness, cap, alpha) {
 	ctx.closePath();
 }
 
-function drawRectangle(x, y, w, h, c, options) {
+export function drawRectangle(ctx, x, y, w, h, c, options) {
 
 	if (!options)
 		options = {};
@@ -65,7 +58,7 @@ function drawRectangle(x, y, w, h, c, options) {
 	ctx.restore();
 }
 
-function drawText(text, x, y, font, color, align, baseline, alpha) {
+export function drawText(ctx, text, x, y, font, color, align, baseline, alpha) {
 
 	let options = {};
 	if (font instanceof Object) {
@@ -82,7 +75,7 @@ function drawText(text, x, y, font, color, align, baseline, alpha) {
 	ctx.closePath();
 }
 
-function linearRegression(x, y){
+export function linearRegression(x, y){
         var lr = {};
         var n = y.length;
         var sum_x = 0;
