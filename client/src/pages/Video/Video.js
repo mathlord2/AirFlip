@@ -16,6 +16,7 @@ import Ola from "ola";
 import $ from "jquery";
 
 import * as poseDetection from '@tensorflow-models/pose-detection';
+import Webcam from "react-webcam";
 
 const Vid = React.forwardRef((props, ref) => {
     return <video autoPlay={true} muted ref={ref} style={{
@@ -31,29 +32,34 @@ const Canvas = React.forwardRef((props, ref) => {
     return <canvas ref={ref} style={{position: "absolute", right: 0, zIndex: 15}}/>
 })
 
-const Video = React.memo(
-    ({ model }) => {
+
+let nn = new NeuralNetwork(10, 64, 3);
+
+$.getJSON("./models/scene.json", function(json) {
+    nn = NeuralNetwork.deserialize(json)
+    console.log("Loaded Neural Network")
+}); 
+
+const Video = (props) => {
         const video = useRef();
         const canvas = useRef();
-
-        useWebcam(video, () => {
+        
+        useEffect(() => {
             startPosing();
+        }, []);
 
-            //startTraining();
-        });
-
+        
+        const videoConstraints = {
+            height: 420,
+            width: 680,
+            facingMode: "environment",
+        };
 
         let poseData = [];
 
         let state = 'waiting';
 
         let firstPose, secondPose, thirdPose;
-        let nn = new NeuralNetwork(10, 64, 3);
-
-        $.getJSON("./models/scene.json", function(json) {
-            nn = NeuralNetwork.deserialize(json)
-            console.log("Loaded Neural Network")
-        });          
 
         function startTraining() {
             console.log("Get ready for posing in 5 seconds")
@@ -138,7 +144,7 @@ const Video = React.memo(
             }, 5000)
         }
 
-        const startPosing = useCallback(async () => {
+        const startPosing = async () => {
 
             const defaultWidth = 640;
             const defaultHeight = 480;
@@ -151,15 +157,20 @@ const Video = React.memo(
             let halfRep = false;
             let training = false;
 
-            let canvasElement = canvas.current;
+            let poseIndex = 0;
 
-            var ctx = canvas.current.getContext("2d");
+            let canvasElement = canvas.current;
+            let videoElement = document.getElementById("webcam");
+
+            var ctx = canvasElement.getContext("2d");
 
             const detectorConfig = {modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER};
             const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, detectorConfig);
 
-            canvas.current.width = video.current.offsetWidth;
-            canvas.current.height = video.current.offsetHeight;
+            // canvasElement.width = videoElement.offsetWidth;
+            // canvasElement.height = videoElement.offsetHeight;
+            canvasElement.width = videoConstraints.width;
+            canvasElement.height = videoConstraints.height;
 
             let r2 = Ola(0);
             let joints = {};
@@ -167,7 +178,6 @@ const Video = React.memo(
             // Update function
             async function update () {
     
-                let videoElement = video.current;
                 let poses = await detector.estimatePoses(videoElement);
 
                 if (canvasElement) {
@@ -210,17 +220,28 @@ const Video = React.memo(
                     // Feedforward
             
                     let result = nn.feedForward(currPoseData);
-                    let poseIndex = result.indexOf(Math.max(...result))
-            
+                    poseIndex = result.indexOf(Math.max(...result))
+                    
                     if (lastPose != poseIndex && Date.now()-lastRep > 400) {
                         halfRep = !halfRep;
             
                         if (!halfRep)
-                        counter++;
+                        {
+                            if (poseIndex === 1) // Turn right
+                            {
+                                // right
+                                props.setPageNumber(props.pageNumber+1);
+                            } else if (poseIndex === 2) // Turn left
+                            {
+                                // left
+                                props.setPageNumber(Math.max(props.pageNumber-1, 1));
+                            }
+                        }
             
                         lastRep = Date.now();
                     }
-            
+
+                    props.setPageNumber(5);
             
                     lastPose = poseIndex;
 
@@ -265,21 +286,27 @@ const Video = React.memo(
                 if (window.delta > interval) {
                     then = now - (window.delta % interval);
         
-                    update();
+                    setTimeout(() => update(), 3000);
                 }
             }
             loop();
     
-        }, []);
+        }
 
         return(
             <div style={{position: "absolute", right: 0, top: 100, zIndex: 10}}>
-                <Vid ref={video}/>
-
-                <Canvas ref={canvas}/>
+                <Webcam
+                    id="webcam"
+                    audio={false}
+                    ref={video}
+                    style={{
+                        transform: "rotateY(180deg)"
+                    }}
+                    videoConstraints={videoConstraints}
+                />
+                <Canvas id="canvas" ref={canvas}/>
             </div>
         );
     }
-)
 
 export default Video;

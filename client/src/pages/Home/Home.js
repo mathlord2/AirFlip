@@ -41,11 +41,7 @@ const Home = props => {
         handleListen();
 
     }, [videoOn]);
-
-    const handleVideo = () => {
-        
-    }
-
+    
     const handleListen = () => {
         if (videoOn) {
             mic.start();
@@ -84,7 +80,7 @@ const Home = props => {
         const forward = ["forward", "next", "right"];
         const backward = ["backward", "previous", "back", "left"];
 
-        if (forward.includes(word.toLowerCase().trim()) && pageRef.current !== numPages) {
+        if (forward.includes(word.toLowerCase().trim()) && pageRef.current !== numRef.current) {
             setPageNumber(prevNum => prevNum+1);
         } else if (backward.includes(word.toLowerCase().trim()) && pageRef.current !== 1) {
             setPageNumber(prevNum => prevNum-1);
@@ -108,8 +104,9 @@ const Home = props => {
             <div style={{padding: "5vh 0px"}}/>
             <Upload text="Open PDF" size="18px" onChange={changeFile} file={file} accept=".pdf"/>
             {file && <Button text={!videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={toggleVideo}/>}
-
-            {videoOn && <Video/>}
+            {/* {videoOn && <Video/>} */}
+            
+            {videoOn && <Video setPageNumber={setPageNumber} pageNumber={pageNumber} numPages={numPages}/>}
 
             {file && <div style={{marginTop: "5vh"}}>
                 <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
