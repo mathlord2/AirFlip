@@ -18,33 +18,28 @@ import $ from "jquery";
 import * as poseDetection from '@tensorflow-models/pose-detection';
 
 const Vid = React.forwardRef((props, ref) => {
-    return <video autoPlay muted ref={ref} style={{
-        position: "absolute",
-        right: 20,
+    return <video autoPlay={true} muted ref={ref} style={{
         border: "5px solid " + COLORS.primary,
         boxShadow: SHADOW.primary,
-        borderRadius: "30px"}} width={500}/>
+        borderRadius: "30px",
+        zIndex: 0,
+    }} />
 });
 
 const Canvas = React.forwardRef((props, ref) => {
-    return <canvas ref={ref} style={{zIndex: 10}}/>
+    return <canvas ref={ref} style={{position: "absolute", right: 20, zIndex: 15}}/>
 })
 
 const Video = React.memo(
     ({ model }) => {
-        const video = useRef(null);
-        const canvas = useRef(null);
+        const video = useRef();
+        const canvas = useRef();
 
         useWebcam(video, () => {
-            runVideo();
+            startPosing();
         });
 
-        useEffect(() => {
-            console.log(canvas);
-            startPosing();
-        }, []);
-
-        async function startPosing() {
+        const startPosing = useCallback(async () => {
             const defaultWidth = 640;
             const defaultHeight = 480;
 
@@ -63,6 +58,8 @@ const Video = React.memo(
 
             var ctx = canvas.current.getContext("2d");
 
+
+            ctx.fillRect(0, 0, 50, 50)
             const detectorConfig = {modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER};
             const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, detectorConfig);
     
@@ -77,8 +74,10 @@ const Video = React.memo(
     
                 let videoElement = video.current;
                 let poses = await detector.estimatePoses(videoElement);
-        
-                ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+                let canvasElement = canvas.current;
+                
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height)
         
                 if (!poses[0]) return;
         
@@ -92,8 +91,8 @@ const Video = React.memo(
                     currPoseData.push(p.x/defaultWidth);
                     currPoseData.push(p.y/defaultHeight);
         
-                    p.x = (canvas.width-p.x - (canvas.width-defaultWidth)) * (canvas.width/defaultWidth);
-                    p.y = p.y * (canvas.height/defaultHeight)
+                    p.x = (canvasElement.width-p.x - (canvasElement.width-defaultWidth)) * (canvasElement.width/defaultWidth);
+                    p.y = p.y * (canvasElement.height/defaultHeight)
                     body[p.name] = p;
                 }
         
@@ -186,7 +185,7 @@ const Video = React.memo(
                 drawLine(ctx, joints["left_eye"].x, joints["left_eye"].y, joints["nose"].x, joints["nose"].y, "lime", 4)
                 drawLine(ctx, joints["nose"].x, joints["nose"].y, joints["right_eye"].x, joints["right_eye"].y, "lime", 4)
                 drawLine(ctx, joints["right_eye"].x, joints["right_eye"].y, joints["right_ear"].x, joints["right_ear"].y, "lime", 4)
-        
+
                 drawLine(ctx, joints["left_wrist"].x, joints["left_wrist"].y, joints["left_elbow"].x, joints["left_elbow"].y, "lime", 4)
                 drawLine(ctx, joints["left_elbow"].x, joints["left_elbow"].y, joints["left_shoulder"].x, joints["left_shoulder"].y, "lime", 4)
         
@@ -247,17 +246,13 @@ const Video = React.memo(
             }
             loop();
     
-        }
-
-        const runVideo = useCallback(async () => {
-            console.log("Hi");
-        }, [model]);
+        }, []);
 
         return(
             <div style={{position: "absolute", right: 0, top: 100, zIndex: 10}}>
-
-                <Canvas style="position: absolute; z-index: 100;" ref={canvas}/>
                 <Vid ref={video}/>
+
+                <Canvas ref={canvas}/>
             </div>
         );
     }

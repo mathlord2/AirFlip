@@ -21,7 +21,6 @@ mic.continuous = true;
 mic.interimResults = true;
 mic.lang = 'en-US';
 
-
 const Home = props => {
     //State variables
     const [file, setFile] = useState(null);
@@ -36,7 +35,7 @@ const Home = props => {
     const numRef = useRef({});
     numRef.current = numPages;
     const wordRef = useRef({});
-    wordRef.current = words;
+    wordRef.current = words
 
     useEffect(() => {
         handleListen();
@@ -63,7 +62,7 @@ const Home = props => {
             
             const length = event.results.length;
             const mostRecentWord = event.results[length-1][0].transcript.trim();
-            console.log(mostRecentWord);
+            //console.log(mostRecentWord);
 
             if (transcript !== wordRef.current) {
                 setWords(transcript);
