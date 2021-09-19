@@ -39,7 +39,7 @@ const Video = React.memo(
         useWebcam(video, () => {
             startPosing();
 
-            startTraining();
+            //startTraining();
         });
 
 
@@ -50,10 +50,10 @@ const Video = React.memo(
         let firstPose, secondPose, thirdPose;
         let nn = new NeuralNetwork(10, 64, 3);
 
-        // $.getJSON("./models/scene.json", function(json) {
-        //     nn = NeuralNetwork.deserialize(json)
-        //     console.log("Loaded Neural Network")
-        // });          
+        $.getJSON("./models/scene.json", function(json) {
+            nn = NeuralNetwork.deserialize(json)
+            console.log("Loaded Neural Network")
+        });          
 
         function startTraining() {
             console.log("Get ready for posing in 5 seconds")
