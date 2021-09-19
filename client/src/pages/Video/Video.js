@@ -50,10 +50,10 @@ const Video = React.memo(
         let firstPose, secondPose, thirdPose;
         let nn = new NeuralNetwork(10, 64, 3);
 
-        $.getJSON("./models/scene.json", function(json) {
-            nn = NeuralNetwork.deserialize(json)
-            console.log("Loaded Neural Network")
-        });          
+        // $.getJSON("./models/scene.json", function(json) {
+        //     nn = NeuralNetwork.deserialize(json)
+        //     console.log("Loaded Neural Network")
+        // });          
 
         function startTraining() {
             console.log("Get ready for posing in 5 seconds")
@@ -77,49 +77,46 @@ const Video = React.memo(
                     state = 'collecting';
           
                     setTimeout(function() {
-                      console.log("Done Posing");
-                      state = 'done';
-
-                      secondPose = JSON.parse(JSON.stringify(poseData));
-
-                      console.log("Get ready for posing in 5 seconds")
-
+                        console.log("Done Posing");
+                        state = 'done';
+            
+                        secondPose = JSON.parse(JSON.stringify(poseData));
+                        
+                        console.log("Get ready for posing in 5 seconds")
+          
                         // TRAIN THIRD POSE
                         setTimeout(function () {
                             poseData = [];
                             console.log("Start Posing")
                             state = 'collecting';
-                    
+                
                             setTimeout(function() {
                                 console.log("Done Posing");
                                 state = 'done';
                     
-                    
                                 thirdPose = JSON.parse(JSON.stringify(poseData));
-                    
+            
                                 console.log("Start Training")
                     
                                 console.log(firstPose);
                                 console.log(secondPose);
-                                console.log(thirdPose);
                     
                                 for (let i = 0; i < 5000; i++) {
-                                let randomTarget = Math.floor(Math.random() * 3);
+                                    let randomTarget = Math.floor(Math.random() * 3);
                     
-                                if (randomTarget == 0) {
-                                    let input = firstPose[Math.floor(Math.random() * firstPose.length)]
-                                    let target = [1, 0, 0];
-                                    nn.train(input, target);
-                                } else if (randomTarget == 1) {
-                                    let input = secondPose[Math.floor(Math.random() * secondPose.length)]
-                                    let target = [0, 1, 0];
-                                    nn.train(input, target);
-                                }
-                                //  else {
-                                //     let input = thirdPose[Math.floor(Math.random() * thirdPose.length)]
-                                //     let target = [0, 0, 1];
-                                //     nn.train(input, target);
-                                // }
+                                    if (randomTarget == 0) {
+                                        let input = firstPose[Math.floor(Math.random() * firstPose.length)]
+                                        let target = [1, 0, 0];
+                                        nn.train(input, target);
+                                    } else if (randomTarget == 1) {
+                                        let input = secondPose[Math.floor(Math.random() * secondPose.length)]
+                                        let target = [0, 1, 0];
+                                        nn.train(input, target);
+                                    } else if (randomTarget == 2) {
+                                        let input = thirdPose[Math.floor(Math.random() * thirdPose.length)]
+                                        let target = [0, 0, 1];
+                                        nn.train(input, target);
+                                    }
                     
                                 }
                     
@@ -130,12 +127,12 @@ const Video = React.memo(
                                 dlAnchorElem.setAttribute("href",     dataStr     );
                                 dlAnchorElem.setAttribute("download", "scene.json");
                                 dlAnchorElem.click();
-                    
                             }, 5000)
-                    
                         }, 5000)
                     }, 5000)
-                }, 5000)
+          
+                  }, 5000)
+          
               }, 5000)
           
             }, 5000)
@@ -219,18 +216,7 @@ const Video = React.memo(
                         halfRep = !halfRep;
             
                         if (!halfRep)
-                        {
-                            if (poseIndex == 1)
-                            {
-                                // right
-                                //Home.setPageNumber(pageNumber+1);
-                            } else if (poseIndex == 2)
-                            {
-                                // left
-                                //Home.setPageNumber(pageNumber-1);
-                            }
-                            //setPageNumber();
-                        }
+                        counter++;
             
                         lastRep = Date.now();
                     }
