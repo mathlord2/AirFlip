@@ -40,7 +40,7 @@ export class NeuralNetwork {
 			this.outputBias.randomize();
 		}
 
-		this.lr = 0.1;
+		this.lr = 1;
 	}
 
 	feedForward(input) {
