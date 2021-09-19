@@ -17,7 +17,7 @@ const Video = React.memo(
 
         return(
             <div style={{position: "absolute", right: 0, top: 100, zIndex: 10}}>
-                <video autoplay muted ref={videoRef} style={{
+                <video autoPlay muted ref={videoRef} style={{
                     position: "absolute",
                     right: 20,
                     border: "5px solid " + COLORS.primary,

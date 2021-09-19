@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -14,47 +14,111 @@ const options = {
     cMapPacked: SVGComponentTransferFunctionElement
 };
 
-export default class Home extends React.Component {
-    state = {
-        file: null,
-        pageNumber: 1,
-        numPages: 1,
-        videoOn: false
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const mic = new SpeechRecognition();
+
+mic.continuous = true;
+mic.interimResults = true;
+mic.lang = 'en-US';
+
+
+const Home = props => {
+    //State variables
+    const [file, setFile] = useState(null);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [numPages, setNumPages] = useState(1);
+    const [videoOn, setVideoOn] = useState(false);
+    const [words, setWords] = useState("");
+
+    //Ref variables
+    const pageRef = useRef({});
+    pageRef.current = pageNumber;
+    const numRef = useRef({});
+    numRef.current = numPages;
+    const wordRef = useRef({});
+    wordRef.current = words;
+
+    useEffect(() => {
+        handleListen();
+    }, [videoOn]);
+
+    const handleListen = () => {
+        if (videoOn) {
+            mic.start();
+            mic.onend = () => {
+                mic.start();
+            }
+        } else {
+            mic.stop();
+            mic.onend = () => {
+                console.log('Stopped Mic.');
+            }
+        }
+    
+        mic.onresult = event => {
+            const transcript = Array.from(event.results)
+                .map(result => result[0])
+                .map(result => result.transcript)
+                .join('');
+            
+            const length = event.results.length;
+            const mostRecentWord = event.results[length-1][0].transcript.trim();
+            console.log(mostRecentWord);
+
+            if (transcript !== wordRef.current) {
+                setWords(transcript);
+                flipPage(mostRecentWord);
+            }
+
+            mic.onerror = event => {
+                console.log(event.error);
+            }
+        }
     }
 
-    changeFile = e => {
-        console.log(e.target.files[0]);
-        this.setState({file: e.target.files[0]});
+    const flipPage = word => { 
+        const forward = ["forward", "next", "right"];
+        const backward = ["backward", "previous", "back", "left"];
+
+        if (forward.includes(word.toLowerCase().trim()) && pageRef.current !== numPages) {
+            setPageNumber(prevNum => prevNum+1);
+        } else if (backward.includes(word.toLowerCase().trim()) && pageRef.current !== 1) {
+            setPageNumber(prevNum => prevNum-1);
+        }
     }
 
-    onDocumentLoadSuccess = ({ numPages: nextNumPages }) => {
-        this.setState({numPages: nextNumPages});
+    const changeFile = e => {
+        setFile(e.target.files[0]);
     }
 
-    toggleVideo = () => {
-        this.setState(prevState => ({videoOn: !prevState.videoOn}));
+    const onDocumentLoadSuccess = ({ numPages: nextNumPages }) => {
+        setNumPages(nextNumPages);
     }
 
-    render() {
-        return (
-            <div class="page">
-                <div style={{padding: "5vh 0px"}}/>
-                <Upload text="Open PDF" size="18px" onChange={this.changeFile} file={this.state.file} accept=".pdf"/>
-                {this.state.file && <Button text={!this.state.videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={this.toggleVideo}/>}
-
-                {this.state.videoOn && <Video/>}
-
-                {this.state.file && <div style={{marginTop: "5vh"}}>
-                    <Document file={this.state.file} onLoadSuccess={this.onDocumentLoadSuccess} options={options}>
-                        <Page pageNumber={this.state.pageNumber} className="pdf"/>
-                    </Document>
-
-                    <div style={{display: "inline-block", margin: "5px 0px"}}>
-                        {this.state.pageNumber !== 1 && <Button onClick={() => this.setState({pageNumber: this.state.pageNumber-1})} text="Left"/>}
-                        {this.state.pageNumber !== this.state.numPages && <Button onClick={() => this.setState({pageNumber: this.state.pageNumber+1})} text="Right"/>}
-                    </div>
-                </div>}
-            </div>
-        );
+    const toggleVideo = () => {
+        setVideoOn(!videoOn);
     }
+
+    return (
+        <div className="page">
+            <div style={{padding: "5vh 0px"}}/>
+            <Upload text="Open PDF" size="18px" onChange={changeFile} file={file} accept=".pdf"/>
+            {file && <Button text={!videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={toggleVideo}/>}
+
+            {videoOn && <Video/>}
+
+            {file && <div style={{marginTop: "5vh"}}>
+                <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
+                    <Page pageNumber={pageNumber} className="pdf"/>
+                </Document>
+
+                <div style={{display: "inline-block", margin: "5px 0px"}}>
+                    {pageNumber !== 1 && <Button onClick={() => setPageNumber(pageNumber-1)} text="Left"/>}
+                    {pageNumber !== numPages && <Button onClick={() => setPageNumber(pageNumber+1)} text="Right"/>}
+                </div>
+            </div>}
+        </div>
+    );
 }
+
+export default Home;
