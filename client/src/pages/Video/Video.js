@@ -47,8 +47,8 @@ const Video = React.memo(
 
         let state = 'waiting';
 
-        let firstPose, secondPose;
-        let nn = new NeuralNetwork(10, 64, 2);
+        let firstPose, secondPose, thirdPose;
+        let nn = new NeuralNetwork(10, 64, 3);
 
         $.getJSON("./models/scene.json", function(json) {
             nn = NeuralNetwork.deserialize(json)
@@ -79,41 +79,63 @@ const Video = React.memo(
                     setTimeout(function() {
                       console.log("Done Posing");
                       state = 'done';
-          
+
                       secondPose = JSON.parse(JSON.stringify(poseData));
-          
-                      console.log("Start Training")
-          
-                      console.log(firstPose);
-                      console.log(secondPose);
-          
-                      for (let i = 0; i < 5000; i++) {
-                        let randomTarget = Math.floor(Math.random() * 2);
-          
-                        if (randomTarget) {
-                          let input = firstPose[Math.floor(Math.random() * firstPose.length)]
-                          let target = [1, 0];
-                          nn.train(input, target);
-                        } else {
-                          let input = secondPose[Math.floor(Math.random() * secondPose.length)]
-                          let target = [0, 1];
-                          nn.train(input, target);
-                        }
-          
-                      }
-          
-                      console.log("Done Training");
-          
-                      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(nn.serialize());
-                      var dlAnchorElem = document.getElementById('downloadAnchorElem');
-                      dlAnchorElem.setAttribute("href",     dataStr     );
-                      dlAnchorElem.setAttribute("download", "scene.json");
-                      dlAnchorElem.click();
-          
+
+                      console.log("Get ready for posing in 5 seconds")
+
+                        // TRAIN THIRD POSE
+                        setTimeout(function () {
+                            poseData = [];
+                            console.log("Start Posing")
+                            state = 'collecting';
+                    
+                            setTimeout(function() {
+                                console.log("Done Posing");
+                                state = 'done';
+                    
+                    
+                                thirdPose = JSON.parse(JSON.stringify(poseData));
+                    
+                                console.log("Start Training")
+                    
+                                console.log(firstPose);
+                                console.log(secondPose);
+                                console.log(thirdPose);
+                    
+                                for (let i = 0; i < 5000; i++) {
+                                let randomTarget = Math.floor(Math.random() * 3);
+                    
+                                if (randomTarget == 0) {
+                                    let input = firstPose[Math.floor(Math.random() * firstPose.length)]
+                                    let target = [1, 0, 0];
+                                    nn.train(input, target);
+                                } else if (randomTarget == 1) {
+                                    let input = secondPose[Math.floor(Math.random() * secondPose.length)]
+                                    let target = [0, 1, 0];
+                                    nn.train(input, target);
+                                }
+                                //  else {
+                                //     let input = thirdPose[Math.floor(Math.random() * thirdPose.length)]
+                                //     let target = [0, 0, 1];
+                                //     nn.train(input, target);
+                                // }
+                    
+                                }
+                    
+                                console.log("Done Training");
+                    
+                                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(nn.serialize());
+                                var dlAnchorElem = document.getElementById('downloadAnchorElem');
+                                dlAnchorElem.setAttribute("href",     dataStr     );
+                                dlAnchorElem.setAttribute("download", "scene.json");
+                                dlAnchorElem.click();
+                    
+                            }, 5000)
+                    
+                        }, 5000)
                     }, 5000)
-          
-                  }, 5000)
-          
+                }, 5000)
               }, 5000)
           
             }, 5000)
@@ -197,7 +219,18 @@ const Video = React.memo(
                         halfRep = !halfRep;
             
                         if (!halfRep)
-                        counter++;
+                        {
+                            if (poseIndex == 1)
+                            {
+                                // right
+                                //Home.setPageNumber(pageNumber+1);
+                            } else if (poseIndex == 2)
+                            {
+                                // left
+                                //Home.setPageNumber(pageNumber-1);
+                            }
+                            //setPageNumber();
+                        }
             
                         lastRep = Date.now();
                     }
