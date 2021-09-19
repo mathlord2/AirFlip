@@ -34,6 +34,7 @@ const Canvas = React.forwardRef((props, ref) => {
 
 
 let nn = new NeuralNetwork(10, 64, 3);
+let init = false;
 
 $.getJSON("./models/scene.json", function(json) {
     nn = NeuralNetwork.deserialize(json)
@@ -44,14 +45,19 @@ const Video = (props) => {
         const video = useRef();
         const canvas = useRef();
         
-        useEffect(() => {
-            startPosing();
+        useEffect(async () => {
+            if (!init) {
+                await startPosing();
+
+                //startTraining();
+                init = true;
+            }
         }, []);
 
         
         const videoConstraints = {
-            height: 420,
-            width: 680,
+            height: 400,
+            width: 400,
             facingMode: "environment",
         };
 
@@ -104,10 +110,10 @@ const Video = (props) => {
             
                                 console.log("Start Training")
                     
-                                console.log(firstPose);
-                                console.log(secondPose);
+                                // console.log(firstPose);
+                                // console.log(secondPose);
                     
-                                for (let i = 0; i < 5000; i++) {
+                                for (let i = 0; i < 50000; i++) {
                                     let randomTarget = Math.floor(Math.random() * 3);
                     
                                     if (randomTarget == 0) {
@@ -119,11 +125,11 @@ const Video = (props) => {
                                         let target = [0, 1, 0];
                                         nn.train(input, target);
                                     } else if (randomTarget == 2) {
-                                        let input = thirdPose[Math.floor(Math.random() * thirdPose.length)]
+                                        let input = thirdPose[Math.floor(Math.random() * thirdPose.length)];
                                         let target = [0, 0, 1];
                                         nn.train(input, target);
                                     }
-                    
+                                
                                 }
                     
                                 console.log("Done Training");
@@ -136,18 +142,15 @@ const Video = (props) => {
                             }, 5000)
                         }, 5000)
                     }, 5000)
-          
                   }, 5000)
-          
               }, 5000)
-          
             }, 5000)
         }
 
         const startPosing = async () => {
 
-            const defaultWidth = 640;
-            const defaultHeight = 480;
+            const defaultWidth = 400;
+            const defaultHeight = 400;
 
             let currPoseData = [];
 
@@ -191,17 +194,43 @@ const Video = (props) => {
                     // Convert points to body joints
             
                     currPoseData = [];
+
+                    let leftOffset, rightOffset;
+
                     for (let p of points) {
+                        if (p.name == "left_ear") {
+                            leftOffset = {x: p.x, y: p.y};
+
+                            leftOffset.x = (canvasElement.width-leftOffset.x - (canvasElement.width-defaultWidth))*(canvasElement.width/defaultWidth);
+                            leftOffset.y = leftOffset.y * (canvasElement.height/defaultHeight);
+                        } else if (p.name =="right_ear") {
+                            rightOffset = {x: p.x, y: p.y};
+                            
+                            rightOffset.x = (canvasElement.width-rightOffset.x - (canvasElement.width-defaultWidth))*(canvasElement.width/defaultWidth);
+                            rightOffset.y = rightOffset.y * (canvasElement.height/defaultHeight);
+                        }
+                    }
+
+                    let normalizedWidth = Math.abs(rightOffset.x - leftOffset.x) + 50;
+                    let normalizedHeight = Math.abs(rightOffset.y - leftOffset.y) + 100;
+
+                    drawRectangle(ctx, leftOffset.x-25, Math.min(leftOffset.y, rightOffset.y)-50, normalizedWidth, normalizedHeight, "blue", {fill: false, outline: true, outlineWidth: 5, outlineColor: "blue"});
+
+                    for (let p of points) {
+
                         if (["nose", "left_ear", "right_ear", "left_eye", "right_eye"].includes(p.name)) {
-                            currPoseData.push(p.x/defaultWidth);
-                            currPoseData.push(p.y/defaultHeight);
-                
+
+                            currPoseData.push((p.x-leftOffset.x+25)/normalizedWidth);
+                            currPoseData.push((p.y-leftOffset.y+50)/normalizedHeight);
+                            
                             p.x = (canvasElement.width-p.x - (canvasElement.width-defaultWidth)) * (canvasElement.width/defaultWidth);
-                            p.y = p.y * (canvasElement.height/defaultHeight)
+                            p.y = p.y * (canvasElement.height/defaultHeight);
+
+                            // p.x = (p.x-leftOffset.x+25)/normalizedWidth;
+                            // p.y = (p.y-leftOffset.y+50)/normalizedHeight;
+
                             body[p.name] = p;
                         }
-
-                        
                     }
             
                     if (state == 'collecting')
@@ -222,33 +251,25 @@ const Video = (props) => {
                     let result = nn.feedForward(currPoseData);
                     poseIndex = result.indexOf(Math.max(...result))
                     
-                    if (lastPose != poseIndex && Date.now()-lastRep > 400) {
-                        halfRep = !halfRep;
+                    if (lastPose == 0 && poseIndex > 0 && Date.now()-lastRep > 400) {
             
-                        if (!halfRep)
+                        if (poseIndex === 1) // Turn right
                         {
-                            if (poseIndex === 1) // Turn right
-                            {
-                                // right
-                                props.setPageNumber(props.pageNumber+1);
-                            } else if (poseIndex === 2) // Turn left
-                            {
-                                // left
-                                props.setPageNumber(Math.max(props.pageNumber-1, 1));
-                            }
+                            // right
+                            props.increment();
+                        } else if (poseIndex === 2) // Turn left
+                        {
+                            // left
+                            props.decrement();
                         }
-            
+        
                         lastRep = Date.now();
                     }
 
-                    props.setPageNumber(5);
-            
                     lastPose = poseIndex;
 
-
                     drawText(ctx, "Predicted Pose: " + poseIndex, 20, 50, "20px Arial", "red", "left", "top");
-                    drawText(ctx, "# of Reps: " + counter, 20, 80, "20px Arial", "red", "left", "top");
-            
+                    drawText(ctx, "# of Reps: " + counter, 20, 80, "20px Arial", "red", "left", "top");            
                     
                     // Draw the skeleton
                     drawLine(ctx, joints["left_ear"].x, joints["left_ear"].y, joints["left_eye"].x, joints["left_eye"].y, "lime", 4)
@@ -276,7 +297,7 @@ const Video = (props) => {
             window.delta = 0;
     
             let neckArray = [];
-    
+            
             function loop() {
                 requestAnimationFrame(loop);
         
@@ -289,8 +310,9 @@ const Video = (props) => {
                     setTimeout(() => update(), 3000);
                 }
             }
-            loop();
-    
+            if (props.videoOn) {
+                loop();
+            }
         }
 
         return(
