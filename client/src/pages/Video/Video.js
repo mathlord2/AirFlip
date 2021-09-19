@@ -34,6 +34,7 @@ const Canvas = React.forwardRef((props, ref) => {
 
 
 let nn = new NeuralNetwork(10, 64, 3);
+let init = false;
 
 $.getJSON("./models/scene.json", function(json) {
     nn = NeuralNetwork.deserialize(json)
@@ -44,8 +45,11 @@ const Video = (props) => {
         const video = useRef();
         const canvas = useRef();
         
-        useEffect(() => {
-            startPosing();
+        useEffect(async () => {
+            if (!init) {
+                await startPosing();
+                init = true;
+            }
         }, []);
 
         
@@ -213,7 +217,7 @@ const Video = (props) => {
                             joints[id].x = body[id].x;
                             joints[id].y = body[id].y;
                         } else {
-                            joints[id] = Ola({x: body[id].x, y: body[id].y}, 50);
+                            joints[id] = Ola({x: body[id].x, y: body[id].y}, 500);
                         }
                     }
             
@@ -222,27 +226,21 @@ const Video = (props) => {
                     let result = nn.feedForward(currPoseData);
                     poseIndex = result.indexOf(Math.max(...result))
                     
-                    if (lastPose != poseIndex && Date.now()-lastRep > 400) {
-                        halfRep = !halfRep;
+                    if (lastPose == 0 && poseIndex > 0 && Date.now()-lastRep > 400) {
             
-                        if (!halfRep)
+                        if (poseIndex === 1) // Turn right
                         {
-                            if (poseIndex === 1) // Turn right
-                            {
-                                // right
-                                props.setPageNumber(props.pageNumber+1);
-                            } else if (poseIndex === 2) // Turn left
-                            {
-                                // left
-                                props.setPageNumber(Math.max(props.pageNumber-1, 1));
-                            }
+                            // right
+                            props.increment();
+                        } else if (poseIndex === 2) // Turn left
+                        {
+                            // left
+                            props.decrement();
                         }
-            
+        
                         lastRep = Date.now();
                     }
 
-                    props.setPageNumber(5);
-            
                     lastPose = poseIndex;
 
 
@@ -276,7 +274,7 @@ const Video = (props) => {
             window.delta = 0;
     
             let neckArray = [];
-    
+            
             function loop() {
                 requestAnimationFrame(loop);
         
@@ -289,8 +287,9 @@ const Video = (props) => {
                     setTimeout(() => update(), 3000);
                 }
             }
-            loop();
-    
+            if (props.videoOn) {
+                loop();
+            }
         }
 
         return(

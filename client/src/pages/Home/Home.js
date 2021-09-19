@@ -106,7 +106,8 @@ const Home = props => {
             {file && <Button text={!videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={toggleVideo}/>}
             {/* {videoOn && <Video/>} */}
             
-            {videoOn && <Video setPageNumber={setPageNumber} pageNumber={pageNumber} numPages={numPages}/>}
+            {videoOn && <Video increment={() => setPageNumber(prevNum => prevNum+1)} decrement={() => setPageNumber(prevNum => Math.max(1, prevNum-1))}
+            pageNumber={pageRef.current} numPages={numRef.current} videoOn={videoOn}/>}
 
             {file && <div style={{marginTop: "5vh"}}>
                 <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
