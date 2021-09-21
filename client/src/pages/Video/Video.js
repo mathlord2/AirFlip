@@ -36,7 +36,7 @@ const Canvas = React.forwardRef((props, ref) => {
 let nn = new NeuralNetwork(10, 64, 3);
 let init = false;
 
-$.getJSON("./models/scene.json", function(json) {
+$.getJSON("./models/scene (3).json", function(json) {
     nn = NeuralNetwork.deserialize(json)
     console.log("Loaded Neural Network")
 }); 
@@ -56,8 +56,8 @@ const Video = (props) => {
 
         
         const videoConstraints = {
-            height: 400,
-            width: 400,
+            height: 420,
+            width: 680,
             facingMode: "environment",
         };
 
@@ -149,8 +149,8 @@ const Video = (props) => {
 
         const startPosing = async () => {
 
-            const defaultWidth = 400;
-            const defaultHeight = 400;
+            const defaultWidth = 680;
+            const defaultHeight = 420;
 
             let currPoseData = [];
 
@@ -269,7 +269,7 @@ const Video = (props) => {
                     lastPose = poseIndex;
 
                     drawText(ctx, "Predicted Pose: " + poseIndex, 20, 50, "20px Arial", "red", "left", "top");
-                    drawText(ctx, "# of Reps: " + counter, 20, 80, "20px Arial", "red", "left", "top");            
+                    //drawText(ctx, "# of Reps: " + counter, 20, 80, "20px Arial", "red", "left", "top");            
                     
                     // Draw the skeleton
                     drawLine(ctx, joints["left_ear"].x, joints["left_ear"].y, joints["left_eye"].x, joints["left_eye"].y, "lime", 4)
@@ -307,7 +307,7 @@ const Video = (props) => {
                 if (window.delta > interval) {
                     then = now - (window.delta % interval);
         
-                    setTimeout(() => update(), 3000);
+                    setTimeout(() => update(), 2000);
                 }
             }
             if (props.videoOn) {

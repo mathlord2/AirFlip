@@ -5,6 +5,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 
 import Upload from "../../components/Upload";
 import Button from "../../components/Button";
+import Textbox from "../../components/Textbox";
 import Video from "../Video/Video";
 
 import "./Home.css";
@@ -88,6 +89,7 @@ const Home = props => {
     }
 
     const changeFile = e => {
+        setPageNumber(1);
         setFile(e.target.files[0]);
     }
 
@@ -99,25 +101,32 @@ const Home = props => {
         setVideoOn(!videoOn);
     }
 
+    const changeNum = e => {
+        if (1 <= parseInt(e.target.value) && parseInt(e.target.value) <= numPages) {
+            setPageNumber(parseInt(e.target.value));
+        }
+    }
+
     return (
         <div className="page">
             <div style={{padding: "5vh 0px"}}/>
-            <Upload text="Open PDF" size="18px" onChange={changeFile} file={file} accept=".pdf"/>
+            <Upload text="Open Document" size="18px" onChange={changeFile} file={file} accept=".pdf"/>
             {file && <Button text={!videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={toggleVideo}/>}
             {/* {videoOn && <Video/>} */}
             
             {videoOn && <Video increment={() => setPageNumber(prevNum => prevNum+1)} decrement={() => setPageNumber(prevNum => prevNum-1)}
-            pageNumber={pageNumber} numPages={numPages} videoOn={videoOn} key={pageNumber}/>}
+            pageNumber={pageNumber} numPages={numPages} videoOn={videoOn}/>}
 
             {file && <div style={{marginTop: "5vh"}}>
-                <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
-                    <Page pageNumber={pageNumber} className="pdf"/>
-                </Document>
-
                 <div style={{display: "inline-block", margin: "5px 0px"}}>
                     {pageNumber !== 1 && <Button onClick={() => setPageNumber(pageNumber-1)} text="Left"/>}
+                    <Textbox type="number" value={pageNumber} onChange={changeNum}/>
                     {pageNumber !== numPages && <Button onClick={() => setPageNumber(pageNumber+1)} text="Right"/>}
                 </div>
+
+                <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
+                    <Page pageNumber={pageNumber} className="pdf"/>
+                </Document>            
             </div>}
         </div>
     );
