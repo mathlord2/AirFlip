@@ -147,6 +147,8 @@ const Video = (props) => {
             }, 5000)
         }
 
+        startTraining();
+
         const startPosing = async () => {
 
             const defaultWidth = 400;

@@ -88,6 +88,7 @@ const Home = props => {
     }
 
     const changeFile = e => {
+        setPageNumber(1);
         setFile(e.target.files[0]);
     }
 
