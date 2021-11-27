@@ -40,7 +40,6 @@ const Home = props => {
 
     useEffect(() => {
         handleListen();
-
     }, [videoOn]);
     
     const handleListen = () => {
@@ -107,15 +106,24 @@ const Home = props => {
         }
     }
 
+    const increment = () => {
+        if (pageRef.current < numPages) {
+            setPageNumber(prevNum => prevNum+1);
+        }
+    }
+
+    const decrement = () => {
+        if (pageRef.current > 1) {
+            setPageNumber(prevNum => prevNum-1);
+        }
+    }
+
     return (
         <div className="page">
             <div style={{padding: "5vh 0px"}}/>
             <Upload text="Open Document" size="18px" onChange={changeFile} file={file} accept=".pdf"/>
             {file && <Button text={!videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={toggleVideo}/>}
             {/* {videoOn && <Video/>} */}
-            
-            {videoOn && <Video increment={() => setPageNumber(prevNum => prevNum+1)} decrement={() => setPageNumber(prevNum => prevNum-1)}
-            pageNumber={pageNumber} numPages={numPages} videoOn={videoOn}/>}
 
             {file && <div style={{marginTop: "5vh"}}>
                 <div style={{display: "inline-block", margin: "5px 0px"}}>
@@ -123,10 +131,11 @@ const Home = props => {
                     <Textbox type="number" value={pageNumber} onChange={changeNum}/>
                     {pageNumber !== numPages && <Button onClick={() => setPageNumber(pageNumber+1)} text="Right"/>}
                 </div>
-
+            
                 <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
                     <Page pageNumber={pageNumber} className="pdf"/>
-                </Document>            
+                </Document>
+                {videoOn && <Video increment={increment} decrement={decrement} videoOn={videoOn}/>}
             </div>}
         </div>
     );
