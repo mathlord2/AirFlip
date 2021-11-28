@@ -122,7 +122,7 @@ const Home = props => {
         <div className="page">
             <div style={{padding: "5vh 0px"}}/>
             <Upload text="Open Document" size="18px" onChange={changeFile} file={file} accept=".pdf"/>
-            {file && <Button text={!videoOn ? "Start flipping :)" : "Stop flipping :("} margin="10px 0px" onClick={toggleVideo}/>}
+            {file && <Button text={!videoOn ? "Turn on camera" : "Turn off camera"} margin="10px 0px" onClick={toggleVideo}/>}
             {/* {videoOn && <Video/>} */}
 
             {file && <div style={{marginTop: "5vh"}}>
