@@ -1,6 +1,6 @@
 # Project Description
 
-Our project for Hack the North 2021: a platform enabling seamless swiping through documents using ML to detect head gestures and speech recognition.
+Our project for Hack the North 2021: a platform enabling seamless swiping through documents using ML to detect head gestures and speech recognition. More information at [https://devpost.com/software/airflip](https://devpost.com/software/airflip).
 
 ## How to Run the Project
 
