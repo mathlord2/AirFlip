@@ -14,7 +14,7 @@ import Image from "./HTNLogo.png";
 
 function App() {
   return (
-    <Router>
+    <Router basename={window.location.pathname || ''}>
       <ul className="navbar">
         <li id="logo">
           <NavLink exact to="/" className="link" activeClassName="activeLink"><img src={Image} alt="Logo"/> Home</NavLink>

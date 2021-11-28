@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
+import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 
 import Upload from "../../components/Upload";
@@ -9,6 +9,8 @@ import Textbox from "../../components/Textbox";
 import Video from "../Video/Video";
 
 import "./Home.css";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const options = {
     cMapUrl: 'cmaps/',
@@ -51,7 +53,7 @@ const Home = props => {
         } else {
             mic.stop();
             mic.onend = () => {
-                console.log('Stopped Mic.');
+                console.log('Mic off.');
             }
         }
     
