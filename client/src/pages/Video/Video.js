@@ -34,9 +34,8 @@ const Canvas = React.forwardRef((props, ref) => {
 
 
 let nn = new NeuralNetwork(10, 64, 3);
-let init = false;
 
-$.getJSON("./models/scene.json", function(json) {
+$.getJSON("./models/scene (3).json", function(json) {
     nn = NeuralNetwork.deserialize(json)
     console.log("Loaded Neural Network")
 }); 
@@ -44,20 +43,20 @@ $.getJSON("./models/scene.json", function(json) {
 const Video = (props) => {
         const video = useRef();
         const canvas = useRef();
-        
-        useEffect(async () => {
-            if (!init) {
-                await startPosing();
+        const [videoOn, setVideoOn] = useState(props.videoOn);
 
-                //startTraining();
-                init = true;
-            }
-        }, []);
+        const animateRef = useRef({});
+        
+        useEffect(() => {
+            setVideoOn(props.videoOn);
+            startPosing();
+            return () => cancelAnimationFrame(animateRef.current);
+        }, [props.videoOn]);
 
         
         const videoConstraints = {
-            height: 400,
-            width: 400,
+            height: 300,
+            width: 500,
             facingMode: "environment",
         };
 
@@ -116,15 +115,15 @@ const Video = (props) => {
                                 for (let i = 0; i < 50000; i++) {
                                     let randomTarget = Math.floor(Math.random() * 3);
                     
-                                    if (randomTarget == 0) {
+                                    if (randomTarget === 0) {
                                         let input = firstPose[Math.floor(Math.random() * firstPose.length)]
                                         let target = [1, 0, 0];
                                         nn.train(input, target);
-                                    } else if (randomTarget == 1) {
+                                    } else if (randomTarget === 1) {
                                         let input = secondPose[Math.floor(Math.random() * secondPose.length)]
                                         let target = [0, 1, 0];
                                         nn.train(input, target);
-                                    } else if (randomTarget == 2) {
+                                    } else if (randomTarget === 2) {
                                         let input = thirdPose[Math.floor(Math.random() * thirdPose.length)];
                                         let target = [0, 0, 1];
                                         nn.train(input, target);
@@ -149,8 +148,8 @@ const Video = (props) => {
 
         const startPosing = async () => {
 
-            const defaultWidth = 400;
-            const defaultHeight = 400;
+            const defaultWidth = 500;
+            const defaultHeight = 300;
 
             let currPoseData = [];
 
@@ -177,10 +176,11 @@ const Video = (props) => {
 
             let r2 = Ola(0);
             let joints = {};
+
+            drawText(ctx, "Wait for face markers before starting.", 20, 20, "20px Helvetica", "orange", "left", "top");  
     
             // Update function
             async function update () {
-    
                 let poses = await detector.estimatePoses(videoElement);
 
                 if (canvasElement) {
@@ -198,12 +198,12 @@ const Video = (props) => {
                     let leftOffset, rightOffset;
 
                     for (let p of points) {
-                        if (p.name == "left_ear") {
+                        if (p.name === "left_ear") {
                             leftOffset = {x: p.x, y: p.y};
 
                             leftOffset.x = (canvasElement.width-leftOffset.x - (canvasElement.width-defaultWidth))*(canvasElement.width/defaultWidth);
                             leftOffset.y = leftOffset.y * (canvasElement.height/defaultHeight);
-                        } else if (p.name =="right_ear") {
+                        } else if (p.name ==="right_ear") {
                             rightOffset = {x: p.x, y: p.y};
                             
                             rightOffset.x = (canvasElement.width-rightOffset.x - (canvasElement.width-defaultWidth))*(canvasElement.width/defaultWidth);
@@ -233,7 +233,7 @@ const Video = (props) => {
                         }
                     }
             
-                    if (state == 'collecting')
+                    if (state === 'collecting')
                         poseData.push(currPoseData);
             
                     // Joints
@@ -251,7 +251,7 @@ const Video = (props) => {
                     let result = nn.feedForward(currPoseData);
                     poseIndex = result.indexOf(Math.max(...result))
                     
-                    if (lastPose == 0 && poseIndex > 0 && Date.now()-lastRep > 400) {
+                    if (lastPose === 0 && poseIndex > 0 && Date.now()-lastRep > 400) {
             
                         if (poseIndex === 1) // Turn right
                         {
@@ -267,9 +267,9 @@ const Video = (props) => {
                     }
 
                     lastPose = poseIndex;
-
-                    drawText(ctx, "Predicted Pose: " + poseIndex, 20, 50, "20px Arial", "red", "left", "top");
-                    drawText(ctx, "# of Reps: " + counter, 20, 80, "20px Arial", "red", "left", "top");            
+                    
+                    //drawText(ctx, "Predicted Pose: " + poseIndex, 20, 20, "20px Arial", "red", "left", "top");
+                    //drawText(ctx, "# of Reps: " + counter, 20, 80, "20px Arial", "red", "left", "top");            
                     
                     // Draw the skeleton
                     drawLine(ctx, joints["left_ear"].x, joints["left_ear"].y, joints["left_eye"].x, joints["left_eye"].y, "lime", 4)
@@ -299,20 +299,20 @@ const Video = (props) => {
             let neckArray = [];
             
             function loop() {
-                requestAnimationFrame(loop);
+                animateRef.current = requestAnimationFrame(loop);
         
                 now = Date.now();
                 window.delta = now - then;
         
                 if (window.delta > interval) {
                     then = now - (window.delta % interval);
-        
-                    setTimeout(() => update(), 3000);
+                    if (videoOn) {
+                        setTimeout(() => update(), 1000);
+                    }
                 }
             }
-            if (props.videoOn) {
-                loop();
-            }
+
+            loop();
         }
 
         return(

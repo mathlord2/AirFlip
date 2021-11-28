@@ -12,7 +12,7 @@ export function drawCircle(ctx, x, y, r, c, options, arc, start) {
       ctx.shadowBlur = options.glowWidth || 100;
     if (options.glowColor)
     ctx.shadowColor = options.glowColor || 'aqua';
-  if (options.fill || options.fill == undefined)
+  if (options.fill || options.fill === undefined)
       ctx.fill();
     ctx.shadowBlur = 0;
     ctx.lineWidth = options.outlineWidth || 1;
@@ -48,7 +48,7 @@ export function drawRectangle(ctx, x, y, w, h, c, options) {
 	ctx.rect(0, 0, w, h);
 	ctx.fillStyle = c || 'black';
 	ctx.globalAlpha = options.alpha || 1;
-	if (options.fill == undefined || options.fill)
+	if (options.fill === undefined || options.fill)
 		ctx.fill();
 	ctx.strokeStyle = options.outlineColor || "black";
 	ctx.lineWidth = options.outlineWidth || 1;
