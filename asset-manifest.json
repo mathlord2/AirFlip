@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/AirFlip/static/css/main.4ec6407e.chunk.css",
-    "main.js": "/AirFlip/static/js/main.e35aaa16.chunk.js",
-    "main.js.map": "/AirFlip/static/js/main.e35aaa16.chunk.js.map",
+    "main.js": "/AirFlip/static/js/main.eba52837.chunk.js",
+    "main.js.map": "/AirFlip/static/js/main.eba52837.chunk.js.map",
     "runtime-main.js": "/AirFlip/static/js/runtime-main.f158c9e8.js",
     "runtime-main.js.map": "/AirFlip/static/js/runtime-main.f158c9e8.js.map",
     "static/css/2.4013827a.chunk.css": "/AirFlip/static/css/2.4013827a.chunk.css",
@@ -22,6 +22,6 @@
     "static/css/2.4013827a.chunk.css",
     "static/js/2.0df7eb96.chunk.js",
     "static/css/main.4ec6407e.chunk.css",
-    "static/js/main.e35aaa16.chunk.js"
+    "static/js/main.eba52837.chunk.js"
   ]
 }
