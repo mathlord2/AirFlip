@@ -315,7 +315,7 @@ const Video = (props) => {
         }
 
         return(
-            <div style={{position: "absolute", right: 0, top: 100, zIndex: 10}}>
+            <div style={{position: "fixed", right: 5, top: 5, zIndex: 10}}>
                 <Webcam
                     id="webcam"
                     audio={false}
